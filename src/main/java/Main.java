@@ -66,14 +66,17 @@ public class Main {
 
             execute("tar -cf " + new File(backupFile)+" " + keyspace, backupTempDir);
         }else if("restore".equals(action)){
-            Collection<File> files = FileUtils.listFiles(new File(dataDir + "/" + keyspace),
-                    FileFileFilter.FILE,
-                    TrueFileFilter.TRUE);
-            files.forEach(f->System.out.println(f.getPath()));
-            files.forEach(File::delete);
+            File dataDirFile = new File(dataDir + "/" + keyspace);
+            if(dataDirFile.exists()) {
+                Collection<File> files = FileUtils.listFiles(dataDirFile, FileFileFilter.FILE, TrueFileFilter.TRUE);
+                files.forEach(f->{
+                    System.out.println("rm "+f.getPath());
+                    f.delete();
+                });
+            }
             execute("tar -xf " + new File(backupFile), new File(dataDir));
         }else{
-            System.out.println("Unexpected command action: "+action);
+            System.out.println("Unexpected command action: " + action);
         }
 
         System.out.println("press Enter to exit...");
