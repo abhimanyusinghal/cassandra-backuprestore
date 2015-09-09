@@ -1,2 +1,2 @@
 # cassandra-backup
-Tool for backup and restore stapshots of Cassandra
+Tool for backup and restore snapshots of Cassandra
