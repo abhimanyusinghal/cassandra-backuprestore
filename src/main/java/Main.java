@@ -64,7 +64,7 @@ public class Main {
                 FileUtils.copyFile(f, new File(backupTempDir.getPath() + "/" + keyspace + "/" + collectionName + "/" + fileName));
             }
 
-            execute("tar -cf " + new File(backupFile)+" " + keyspace, backupTempDir);
+            execute("tar -czf " + new File(backupFile)+" " + keyspace, backupTempDir);
         }else if("restore".equals(action)){
             File dataDirFile = new File(dataDir + "/" + keyspace);
             if(dataDirFile.exists()) {
