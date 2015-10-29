@@ -84,7 +84,7 @@ public class Main {
             System.out.println("Unexpected command action: " + action);
         }
 
-        System.out.println("press Enter to exit...");
+        System.out.println("All done press ENTER to exit...");
         System.in.read();
     }
 
