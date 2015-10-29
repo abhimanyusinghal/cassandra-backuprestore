@@ -8,8 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * User: fil
@@ -29,12 +29,12 @@ public class Main {
         String keyspace = args[2];
         String backupFile = args[3];
 
-        if("backup".equals(action)) {
+        String backupName = "backup_" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+        String cassandraHome = System.getenv("CASSANDRA_HOME");
+        String nodeTool = (cassandraHome == null || cassandraHome.trim().isEmpty())
+                ? "nodetool" : (cassandraHome+"/bin/nodetool");
 
-            String backupName = "backup_" + new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-            String cassandraHome = System.getenv("CASSANDRA_HOME");
-            String nodeTool = (cassandraHome == null || cassandraHome.trim().isEmpty())
-                    ? "nodetool" : (cassandraHome+"/bin/nodetool");
+        if("backup".equals(action)) {
 
             execute(nodeTool + " clearsnapshot " + keyspace, null);
             execute(nodeTool + " snapshot -t " + backupName + " " + keyspace, null);
@@ -75,6 +75,11 @@ public class Main {
                 });
             }
             execute("tar -xf " + new File(backupFile), new File(dataDir));
+            Set<String> tableNames = Arrays.asList(dataDirFile.list())
+                    .stream().map(t->t.substring(0, t.indexOf("-"))).collect(Collectors.toSet());
+            for(String tableName : tableNames) {
+                execute(nodeTool + " refresh -- " + keyspace + " "+tableName, null);
+            }
         }else{
             System.out.println("Unexpected command action: " + action);
         }
